@@ -1,5 +1,6 @@
 import { galleryItems } from "./gallery-items.js";
 const galleryEl = document.querySelector(".gallery");
+let instance;
 
 const gallaryItems = galleryItems.map(
   ({ preview, original, description }) =>
@@ -18,13 +19,33 @@ const gallaryItems = galleryItems.map(
 galleryEl.insertAdjacentHTML("afterbegin", gallaryItems.join(""));
 
 galleryEl.addEventListener("click", handleClickImg);
+
 function handleClickImg(event) {
   event.preventDefault();
-  console.log(event);
-  const instance = basicLightbox.create(
-    `
-    <img src="${event.target.dataset.source}" width="
-    200" height="200"> `
+
+  //basiclightbox librery
+  instance = basicLightbox.create(
+    ` <img src="${event.target.dataset.source}" width="
+    200" height="200"> `,
+    {
+      onShow: () => {
+        window.addEventListener("keydown", escButtonClick);
+      },
+      onClose: () => {
+        window.removeEventListener("keydown", escButtonClick);
+      },
+    }
   );
   instance.show();
+}
+
+// function escButtonClick(event) {
+//   if (event.key === "Escape") {
+//     instance.close();
+//   }
+// }
+function escButtonClick(event) {
+  if (event.code === "Escape") {
+    instance.close();
+  }
 }
